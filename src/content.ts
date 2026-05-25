@@ -38,7 +38,7 @@ export type Project = {
 };
 
 export const projects: Project[] = [
-  { label: "Kemate — a Vercel-like PaaS", badge: "PaaS", color: "green" },
+  { label: "Kemate — a Vercel-like PaaS", badge: "▲ PaaS", color: "green" },
   {
     label: "Ech0 — self-hosted microblog",
     href: "https://github.com/lin-snow/Ech0",

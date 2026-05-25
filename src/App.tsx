@@ -39,8 +39,38 @@ const MARKER = {
   blue: "var(--color-marker-blue)",
 } as const;
 
-/* Hand-drawn sticker: organic (uneven) corners, tinted fill, marker-colored
-   ink, lightly peeled off the page. Renders as a link when `href` is given
+/* The marker outline for a sticker: two slightly offset, wobbly strokes whose
+   edges overshoot the corners — the way a felt-tip looks when you box something
+   in twice. `vector-effect` keeps the line an even weight however wide the badge
+   stretches; the second pass is fainter, for that "gone over it again" feel. */
+function MarkerFrame({ stroke }: { stroke: string }) {
+  return (
+    <svg
+      viewBox="0 0 120 44"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 size-full overflow-visible"
+    >
+      <g
+        fill="none"
+        stroke={stroke}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
+      >
+        <path d="M8,8 C34,5 64,10 113,5 M114,6 C117,18 115,28 113,39 M114,37 C80,41 44,35 6,40 M7,38 C4,28 6,17 8,6" />
+        <path
+          opacity="0.45"
+          transform="translate(-0.6 0.8)"
+          d="M9,9 C36,6 66,11 112,7 M113,8 C116,18 114,28 112,37 M113,35 C80,39 44,34 8,38 M9,37 C6,28 8,18 9,8"
+        />
+      </g>
+    </svg>
+  );
+}
+
+/* Hand-drawn sticker: tinted fill with uneven corners, hand-inked marker
+   outline, lightly peeled off the page. Renders as a link when `href` is given
    (straightens and lifts on hover), otherwise as a plain badge. */
 function Sticker({
   href,
@@ -56,18 +86,25 @@ function Sticker({
   tilt: string;
 }) {
   const stroke = MARKER[color];
-  const className = `${tilt} inline-flex shrink-0 items-center gap-1 border-[1.5px] px-2.5 py-[3px] font-hand text-[1.05rem] leading-none shadow-[0_1px_1px_rgba(0,0,0,0.05),0_6px_12px_-8px_rgba(0,0,0,0.3)]`;
+  const className = `${tilt} relative inline-flex shrink-0 items-center px-3 py-[4px] font-hand text-[1.05rem] leading-none`;
   const style = {
     color: stroke,
-    borderColor: stroke,
     backgroundColor: `color-mix(in srgb, ${stroke} 12%, var(--color-paper))`,
     // uneven radii read as hand-cut paper rather than a CSS pill
     borderRadius: "13px 8px 12px 9px / 8px 12px 9px 13px",
+    filter:
+      "drop-shadow(0 1px 1px rgba(0,0,0,0.05)) drop-shadow(0 7px 10px rgba(0,0,0,0.12))",
   };
+  const inner = (
+    <>
+      <MarkerFrame stroke={stroke} />
+      <span className="relative">{badge}</span>
+    </>
+  );
   if (!href) {
     return (
       <span className={className} style={style}>
-        {badge}
+        {inner}
       </span>
     );
   }
@@ -78,13 +115,19 @@ function Sticker({
       className={`${className} transition-transform duration-200 hover:-translate-y-0.5 hover:rotate-0`}
       style={style}
     >
-      {badge}
+      {inner}
     </a>
   );
 }
 
 /* Wavy marker underline that hugs whatever text it wraps. */
-function HandUnderline({ children }: { children: string }) {
+function HandUnderline({
+  children,
+  color = "red",
+}: {
+  children: string;
+  color?: keyof typeof MARKER;
+}) {
   return (
     <span className="relative inline-block whitespace-nowrap">
       {children}
@@ -98,11 +141,29 @@ function HandUnderline({ children }: { children: string }) {
           className="scribble"
           d="M2,6 C22,2 40,9 58,5 C78,1 98,9 118,4"
           fill="none"
-          stroke="var(--color-marker)"
+          stroke={MARKER[color]}
           strokeWidth="2.2"
           strokeLinecap="round"
         />
       </svg>
+    </span>
+  );
+}
+
+/* Highlighter swipe behind text — a slightly tilted, uneven marker stroke. */
+function MarkerHighlight({ children }: { children: string }) {
+  return (
+    <span className="relative inline-block whitespace-nowrap">
+      <span
+        aria-hidden="true"
+        className="absolute inset-x-[-3px] bottom-[2px] top-[38%] -rotate-1"
+        style={{
+          background:
+            "color-mix(in srgb, var(--color-sticky) 80%, transparent)",
+          borderRadius: "6px 4px 7px 3px / 4px 7px 3px 6px",
+        }}
+      />
+      <span className="relative">{children}</span>
     </span>
   );
 }
@@ -138,10 +199,33 @@ function Pushpin() {
   );
 }
 
+/* Hand-drawn asterisk spark — three slightly-wobbly marker strokes, replaces
+   the ✳ glyph that renders as a color emoji on iOS. */
+function Spark() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      className="size-3 shrink-0 -rotate-6 overflow-visible text-marker"
+    >
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      >
+        <path d="M8,1.8 C7.7,5 8.2,11 8,14.2" />
+        <path d="M2.4,4.6 C5,6.2 11,9.8 13.6,11.4" />
+        <path d="M13.6,4.6 C11,6.2 5,9.8 2.4,11.4" />
+      </g>
+    </svg>
+  );
+}
+
 function SectionLabel({ children }: { children: string }) {
   return (
     <div className="mb-3 flex items-center gap-2">
-      <span className="text-marker">✳</span>
+      <Spark />
       <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-muted">
         {children}
       </span>
@@ -261,6 +345,25 @@ function Elsewhere() {
   );
 }
 
+/* Phrase-level accents for the intro copy. Each phrase gets a different
+   hand-drawn flourish — edit the list (or colors) to taste. */
+const ACCENTS: { phrase: string; wrap: (s: string) => ReactNode }[] = [
+  { phrase: intro.name, wrap: (s) => <HandUnderline color="red">{s}</HandUnderline> },
+  { phrase: "full-stack", wrap: (s) => <HandUnderline color="green">{s}</HandUnderline> },
+  { phrase: "design", wrap: (s) => <MarkerHighlight>{s}</MarkerHighlight> },
+  { phrase: "The Finals", wrap: (s) => <HandUnderline color="blue">{s}</HandUnderline> },
+];
+
+function decorateIntro(line: string): ReactNode {
+  const pattern = ACCENTS.map((a) =>
+    a.phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+  ).join("|");
+  return line.split(new RegExp(`(${pattern})`)).map((part, i) => {
+    const accent = ACCENTS.find((a) => a.phrase === part);
+    return <span key={i}>{accent ? accent.wrap(part) : part}</span>;
+  });
+}
+
 export default function App() {
   return (
     <div className="min-h-svh">
@@ -285,22 +388,9 @@ export default function App() {
           className="rise mt-7 space-y-3 text-[0.95rem] leading-relaxed"
           style={{ animationDelay: "90ms" }}
         >
-          {intro.lines.map((line) => {
-            const [before, ...rest] = line.split(intro.name);
-            return (
-              <p key={line}>
-                {rest.length === 0 ? (
-                  line
-                ) : (
-                  <>
-                    {before}
-                    <HandUnderline>{intro.name}</HandUnderline>
-                    {rest.join(intro.name)}
-                  </>
-                )}
-              </p>
-            );
-          })}
+          {intro.lines.map((line) => (
+            <p key={line}>{decorateIntro(line)}</p>
+          ))}
         </div>
 
         <aside

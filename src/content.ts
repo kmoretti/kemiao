@@ -46,7 +46,7 @@ export const projects: Project[] = [
     color: "red",
   },
   {
-    label: "Dox — todos that live in your terminal.",
+    label: "Dox — todos that live in your terminal",
     href: "https://github.com/lin-snow/dox",
     badge: "</> TUI",
     color: "blue",

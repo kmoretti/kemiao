@@ -39,14 +39,36 @@ export type Project = {
 
 export const projects: Project[] = [
   { label: "Kemate — a Vercel-like PaaS", badge: "PaaS", color: "green" },
-  { label: "Ech0 — self-hosted microblog", href: "https://github.com/lin-snow/Ech0", badge: "★ 2k", color: "red" },
-  { label: "Dox — terminal todo, TUI + CLI", href: "https://github.com/lin-snow/dox", badge: "</> TUI", color: "blue" },
+  {
+    label: "Ech0 — self-hosted microblog",
+    href: "https://github.com/lin-snow/Ech0",
+    badge: "★ 2k",
+    color: "red",
+  },
+  {
+    label: "Dox — todos that live in your terminal.",
+    href: "https://github.com/lin-snow/dox",
+    badge: "</> TUI",
+    color: "blue",
+  },
 ];
 
 export const artifacts: Entry[] = [
-  { label: "2025 Year in Review", date: "2026.01", href: "https://blog.vaaat.com/posts/2025_summary/" },
-  { label: "2024 Year in Review", date: "2025.01", href: "https://blog.vaaat.com/posts/2024_summary/" },
-  { label: "2023 Year in Review", date: "2024.01", href: "https://blog.vaaat.com/posts/2023_summary/" },
+  {
+    label: "2025 Year in Review",
+    date: "2026.01",
+    href: "https://blog.vaaat.com/posts/2025_summary/",
+  },
+  {
+    label: "2024 Year in Review",
+    date: "2025.01",
+    href: "https://blog.vaaat.com/posts/2024_summary/",
+  },
+  {
+    label: "2023 Year in Review",
+    date: "2024.01",
+    href: "https://blog.vaaat.com/posts/2023_summary/",
+  },
 ];
 
 export type Link = { label: string; href: string };

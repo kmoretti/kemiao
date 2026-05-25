@@ -53,5 +53,6 @@ export const links: Link[] = [
   { label: "GitHub", href: "https://github.com/lin-snow" },
   { label: "Blog", href: "https://blog.vaaat.com" },
   { label: "Memo", href: "https://memo.vaaat.com" },
+  { label: "CV", href: "https://cv.vaaat.com" },
   { label: "Email", href: "mailto:l1nsn0w@qq.com" },
 ];

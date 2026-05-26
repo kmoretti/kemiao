@@ -104,6 +104,29 @@
     background: var(--color-note);
     color: var(--color-note-ink);
   }
+
+  /* Unfolding project card. The 0fr→1fr grid-rows trick animates to the
+     content's natural height; the inner wrapper clips it while collapsed. The
+     toggle works without motion — only the easing is gated below. */
+  .fold {
+    display: grid;
+    grid-template-rows: 0fr;
+  }
+  .fold.open {
+    grid-template-rows: 1fr;
+  }
+  .fold > * {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* A project's blurb set between two hairline rules — a typed note slipped
+     between rows rather than a floating card (no fill, no shadow). */
+  .framed-note {
+    border-top: 1px solid color-mix(in srgb, var(--color-soft) 45%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-soft) 45%, transparent);
+  }
 }
 
 /* Staggered entrance */
@@ -150,31 +173,18 @@
 .retrace {
   stroke-dasharray: 320;
 }
-/* Same idea for the project-sticker marker frame. The dash exceeds the frame's
-   perimeter so, at rest, the whole outline reads as one solid inked stroke. */
-.retrace-frame {
-  stroke-dasharray: 380;
-}
 
-/* Draw-in for the marker frame; start offset matches its dash (380) so the
-   outline begins fully hidden and inks itself on in one pass. */
-@keyframes draw-frame {
+/* Ink wipe for the corner monogram — a paper-coloured cover slides off to the
+   right (via transform: scaleX) to reveal the cursive letter left-to-right.
+   We animate the *cover's* transform rather than the glyph's clip-path so the
+   wipe stays on the compositor; the ornate Pinyon Script glyph is rasterised
+   once instead of being repainted every frame (which dropped frames on load). */
+@keyframes inkwipe {
   from {
-    stroke-dashoffset: 380;
+    transform: scaleX(1);
   }
   to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* Ink wipe for the corner monogram — reveals the cursive letter left-to-right
-   so it reads as being written in by hand. */
-@keyframes inkwrite {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
+    transform: scaleX(0);
   }
 }
 
@@ -207,20 +217,33 @@
   .retrace {
     animation: scribble 0.5s ease-out;
   }
-  /* Re-draws the sticker's marker frame on hover (remounted via React key). */
-  .retrace-frame {
-    animation: draw-frame 0.55s ease-out;
-  }
   .live-ping {
     animation: ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
-  /* Monogram writes itself in on entrance… */
-  .inkwrite {
-    animation: inkwrite 0.9s 0.5s ease-out backwards;
+  /* The cover only exists while the wipe runs (these rules live inside the
+     reduced-motion guard), so under reduced motion the glyph just shows
+     statically with nothing painted over it. */
+  .inkwrite,
+  .inkwrite-re {
+    position: relative;
+  }
+  .inkwrite::after,
+  .inkwrite-re::after {
+    content: "";
+    position: absolute;
+    inset: -8% -14%; /* overshoot the box so cursive flourishes aren't clipped */
+    background: var(--color-paper);
+    transform-origin: right center;
+    will-change: transform;
+  }
+  /* Monogram writes itself in on entrance ('both': cover holds during the
+     delay, then stays off once revealed)… */
+  .inkwrite::after {
+    animation: inkwipe 0.9s 0.5s ease-out both;
   }
   /* …and re-inks (faster, no delay) when hovered — remounted via React key. */
-  .inkwrite-re {
-    animation: inkwrite 0.7s ease-out;
+  .inkwrite-re::after {
+    animation: inkwipe 0.7s ease-out both;
   }
   .peel-hint {
     transform-origin: 72% 22%; /* pivot near a top corner, like a lifted flap */
@@ -229,5 +252,21 @@
   /* Hold still while you're actually grabbing it. */
   .peel-hint:hover {
     animation: none;
+  }
+  /* Ease the project card open, and let its contents fade/settle in rather
+     than appearing fully drawn the instant the row is clicked. */
+  .fold {
+    transition: grid-template-rows 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .fold > * {
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .fold.open > * {
+    opacity: 1;
+    transform: none;
   }
 }

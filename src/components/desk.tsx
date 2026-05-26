@@ -145,97 +145,84 @@ const MARKER = {
   blue: "var(--color-marker-blue)",
 } as const;
 
-/* The marker outline for a sticker: two slightly offset, wobbly strokes whose
-   edges overshoot the corners — the way a felt-tip looks when you box something
-   in twice. `vector-effect` keeps the line an even weight however wide the badge
-   stretches; the second pass is fainter, for that "gone over it again" feel. */
-function MarkerFrame({
-  stroke,
-  traceKey = 0,
+/* Hand-drawn marker stamp — a wobbly ellipse scrawled around a word, slightly
+   askew, like the red "FOLLOW UP" rubber-stamp on a sticky. Inked in the
+   given marker accent. */
+function HandStamp({
+  children,
+  color,
 }: {
-  stroke: string;
-  traceKey?: number;
+  children: string;
+  color: keyof typeof MARKER;
 }) {
   return (
-    <svg
-      viewBox="0 0 120 44"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0 size-full overflow-visible"
+    <span
+      className="relative inline-flex -rotate-[8deg] items-center justify-center px-3 py-1 font-hand text-[0.95rem] leading-none"
+      style={{ color: MARKER[color] }}
     >
-      {/* Remounting the group (via the key) replays the re-trace; the dash
-          props inherit down to both passes, so the whole frame re-inks. */}
-      <g
-        key={traceKey}
-        className={traceKey > 0 ? "retrace-frame" : undefined}
-        fill="none"
-        stroke={stroke}
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
+      <svg
+        viewBox="0 0 100 44"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 size-full overflow-visible"
       >
-        <path d="M8,8 C34,5 64,10 113,5 M114,6 C117,18 115,28 113,39 M114,37 C80,41 44,35 6,40 M7,38 C4,28 6,17 8,6" />
         <path
-          opacity="0.45"
-          transform="translate(-0.6 0.8)"
-          d="M9,9 C36,6 66,11 112,7 M113,8 C116,18 114,28 112,37 M113,35 C80,39 44,34 8,38 M9,37 C6,28 8,18 9,8"
+          d="M15,9 C42,2 72,4 90,12 C100,18 96,31 83,37 C57,45 25,44 10,34 C1,28 4,15 17,8"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          vectorEffect="non-scaling-stroke"
         />
-      </g>
-    </svg>
+      </svg>
+      <span className="relative">{children}</span>
+    </span>
   );
 }
 
-/* Hand-drawn sticker: tinted fill with uneven corners, hand-inked marker
-   outline, lightly peeled off the page. Renders as a link when `href` is given
-   (straightens and lifts on hover), otherwise as a plain badge. */
-export function Sticker({
+/* The detail that unfolds beneath a project row. Deliberately *not* a card —
+   no box, no shadow — just a typed note set between two hairline rules (the
+   image's framed-monospace look), then a quiet meta line: the stack on the
+   left, and on the right a hand-drawn marker stamp alongside the repo link
+   (the stamp stands in for the link when a project is closed source). */
+export function ProjectDetail({
+  blurb,
+  stack,
   href,
-  label,
-  badge,
   color,
-  tilt,
+  stamp,
 }: {
+  blurb: string;
+  stack?: string[];
   href?: string;
-  label: string;
-  badge: string;
   color: keyof typeof MARKER;
-  tilt: string;
+  stamp: string;
 }) {
-  const stroke = MARKER[color];
-  // Bumping this on hover remounts the frame so it re-inks itself.
-  const [trace, reInk] = useHoverReplay();
-  const className = `${tilt} relative inline-flex shrink-0 items-center px-3 py-[4px] font-hand text-[1.05rem] leading-none`;
-  const style = {
-    color: stroke,
-    backgroundColor: `color-mix(in srgb, ${stroke} 12%, var(--color-paper))`,
-    // uneven radii read as hand-cut paper rather than a CSS pill
-    borderRadius: "13px 8px 12px 9px / 8px 12px 9px 13px",
-    filter:
-      "drop-shadow(0 1px 1px rgba(0,0,0,0.04)) drop-shadow(0 3px 5px rgba(0,0,0,0.08))",
-  };
-  const inner = (
-    <>
-      <MarkerFrame stroke={stroke} traceKey={trace} />
-      <span className="relative">{badge}</span>
-    </>
-  );
-  if (!href) {
-    return (
-      <span className={className} style={style} onMouseEnter={reInk}>
-        {inner}
-      </span>
-    );
-  }
   return (
-    <a
-      href={href}
-      aria-label={`${label} — open`}
-      onMouseEnter={reInk}
-      className={`${className} transition-transform duration-200 hover:-translate-y-0.5 hover:rotate-0`}
-      style={style}
-    >
-      {inner}
-    </a>
+    <div className="mb-1 mt-2.5">
+      <p className="framed-note py-2 font-mono text-[0.72rem] font-medium leading-[1.5] text-soft">
+        {blurb}
+      </p>
+      <div className="mt-2 flex items-center gap-3">
+        {stack && stack.length > 0 && (
+          <span className="min-w-0 truncate font-mono text-[0.66rem] text-muted">
+            {stack.join("  ·  ")}
+          </span>
+        )}
+        <span className="ml-auto flex shrink-0 items-center gap-3">
+          <HandStamp color={color}>{stamp}</HandStamp>
+          {href && (
+            <a
+              href={href}
+              className="group/link relative inline-flex items-center font-mono text-[0.7rem] text-soft underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:text-ink hover:decoration-current"
+            >
+              GitHub
+              <LinkDoodle />
+            </a>
+          )}
+        </span>
+      </div>
+    </div>
   );
 }
 

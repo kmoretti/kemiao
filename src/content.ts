@@ -27,29 +27,50 @@ export const experience: Entry[] = [
   { label: "B.Eng. Software Engineering, GDUT", date: "in progress" },
 ];
 
-// A project. `badge` is the hand-drawn sticker text (kept short so it reads
-// well in the marker font); `color` picks one of the marker accents. `href`
-// is optional — omit it for closed-source / unlinked projects.
+// A project. `date` shows on the row's hand-cut sticky tag. `href` is optional
+// — omit it for closed-source / unlinked projects. `blurb` and `stack` fill the
+// detail revealed when the row is clicked. `stamp` is the short word scrawled in
+// the hand-drawn marker stamp on that detail, and `color` picks the marker
+// accent it's inked in.
 export type Project = {
   label: string;
-  badge: string;
+  date: string;
   color: "red" | "green" | "blue";
+  stamp: string;
   href?: string;
+  blurb?: string;
+  stack?: string[];
 };
 
 export const projects: Project[] = [
-  { label: "Kemate — a Vercel-like PaaS", badge: "▲ PaaS", color: "green" },
   {
     label: "Ech0 — self-hosted microblog",
     href: "https://github.com/lin-snow/Ech0",
-    badge: "★ 2k",
+    date: "2025",
     color: "red",
+    stamp: "popular",
+    blurb:
+      "An open-source, self-hosted space for publishing and sharing your thoughts — your own little corner of the web.",
+    stack: ["Go", "Vue"],
   },
   {
     label: "Dox — todos in terminal",
     href: "https://github.com/lin-snow/dox",
-    badge: "</> TUI",
+    date: "2026",
     color: "blue",
+    stamp: "new",
+    blurb:
+      "More than a todo list: a terminal-first task manager. TUI by default, CLI for scripts — with projects, an inbox, markdown notes, full-text search, multi-user invites and an activity feed, all from one container and a single SQLite file.",
+    stack: ["Go", "TypeScript"],
+  },
+  {
+    label: "Kemate — a Vercel-like PaaS",
+    date: "2026",
+    color: "green",
+    stamp: "WIP",
+    blurb:
+      "A platform-as-a-service taking aim at the likes of Vercel, built on a microservice architecture.",
+    stack: ["Go"],
   },
 ];
 

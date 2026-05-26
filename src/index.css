@@ -6,11 +6,23 @@
    hand   = marker scribbles (Caveat)
    script = corner monogram  (Pinyon Script) */
 @import "@fontsource-variable/hanken-grotesk";
-@import "@fontsource/ibm-plex-mono/400.css";
-@import "@fontsource/ibm-plex-mono/500.css";
-@import "@fontsource/ibm-plex-mono/600.css";
+/* Mono only renders Latin labels at 400 (default) and 500 (font-medium); the
+   600 weight and non-Latin subsets the full imports pull in are never used. */
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
 @import "@fontsource-variable/caveat";
-@import "@fontsource/pinyon-script/400.css";
+
+/* Pinyon Script is purely decorative — only the single uppercase monogram
+   letter ever renders. We self-host an A–Z subset (~12 kB) instead of
+   @import-ing the whole face (~39 kB Latin woff2 + woff + extra subsets),
+   which also keeps those unused files out of the build. */
+@font-face {
+  font-family: "Pinyon Script";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/pinyon-script-AZ-400.woff2") format("woff2");
+}
 
 @theme {
   --font-sans: "Hanken Grotesk Variable", ui-sans-serif, system-ui, sans-serif;

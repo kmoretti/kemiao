@@ -58,7 +58,10 @@
 @layer components {
   /* Notebook dotted margin */
   .dotted {
-    background-image: radial-gradient(var(--color-hair) 1.3px, transparent 1.3px);
+    background-image: radial-gradient(
+      var(--color-hair) 1.3px,
+      transparent 1.3px
+    );
     background-size: 16px 16px;
     background-position: 0 0;
   }
@@ -107,14 +110,53 @@
     stroke-dashoffset: 0;
   }
 }
+/* A sticker peeling from one corner — mostly at rest, with a brief wiggle so
+   visitors notice it can be grabbed. */
+@keyframes peel {
+  0%,
+  86%,
+  100% {
+    transform: rotate(0deg);
+  }
+  90% {
+    transform: rotate(-5deg);
+  }
+  94% {
+    transform: rotate(4deg);
+  }
+  97% {
+    transform: rotate(-1.5deg);
+  }
+}
+
+/* Dash pattern is always present so the re-trace has something to draw; with
+   the default 0 offset the line just reads as fully inked when not animating. */
+.retrace {
+  stroke-dasharray: 320;
+}
 
 @media (prefers-reduced-motion: no-preference) {
+  /* `backwards` (not `forwards`) so the element reverts to transform:none
+     once the entrance finishes — a lingering translateY(0) would create a
+     stacking context per section and trap the draggable avatar beneath later
+     sections' text. The from-keyframe still hides it before it animates in. */
   .rise {
-    opacity: 0;
-    animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
   .scribble {
     stroke-dasharray: 320;
     animation: scribble 0.9s 0.6s ease-out forwards;
+  }
+  /* Re-inks the underline quickly on hover (remounted via React key). */
+  .retrace {
+    animation: scribble 0.5s ease-out;
+  }
+  .peel-hint {
+    transform-origin: 72% 22%; /* pivot near a top corner, like a lifted flap */
+    animation: peel 5s ease-in-out 2.5s infinite;
+  }
+  /* Hold still while you're actually grabbing it. */
+  .peel-hint:hover {
+    animation: none;
   }
 }

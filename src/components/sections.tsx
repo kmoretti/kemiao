@@ -7,7 +7,16 @@ import {
   type Entry,
   type Project,
 } from "../content";
-import { DateTag, LinkDoodle, SectionLabel, Stamp, Sticker } from "./desk";
+import {
+  CopyEmailLink,
+  DateTag,
+  elsewhereLink,
+  LinkDoodle,
+  LiveDot,
+  SectionLabel,
+  Stamp,
+  Sticker,
+} from "./desk";
 
 /* ------------------------------- list rows -------------------------------- */
 
@@ -118,15 +127,20 @@ export function Elsewhere() {
       <ul className="flex flex-wrap gap-x-5 gap-y-2">
         {links.map((l) => (
           <li key={l.label}>
-            <a
-              href={l.href}
-              className="group/link relative font-mono text-[0.78rem] text-soft underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:text-ink hover:decoration-current"
-            >
-              {l.label}
-              <LinkDoodle />
-            </a>
+            {l.href.startsWith("mailto:") ? (
+              <CopyEmailLink href={l.href} label={l.label} />
+            ) : (
+              <a href={l.href} className={elsewhereLink}>
+                {l.label}
+                <LinkDoodle />
+              </a>
+            )}
           </li>
         ))}
+        {/* "around / online" dot, pushed to the far right of the row */}
+        <li className="ml-auto flex items-center" aria-hidden="true">
+          <LiveDot />
+        </li>
       </ul>
     </section>
   );

@@ -5,6 +5,7 @@ import {
   DraggableSticker,
   HandUnderline,
   MarkerHighlight,
+  Monogram,
   Pushpin,
 } from "./desk";
 
@@ -72,9 +73,7 @@ export function Intro() {
             />
           </span>
         </DraggableSticker>
-        <span className="select-none pt-1 font-script text-6xl leading-none text-muted/70">
-          {intro.initial}
-        </span>
+        <Monogram>{intro.initial}</Monogram>
       </header>
 
       <div

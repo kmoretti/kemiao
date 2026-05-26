@@ -146,6 +146,46 @@
 .retrace {
   stroke-dasharray: 320;
 }
+/* Same idea for the project-sticker marker frame. The dash exceeds the frame's
+   perimeter so, at rest, the whole outline reads as one solid inked stroke. */
+.retrace-frame {
+  stroke-dasharray: 380;
+}
+
+/* Draw-in for the marker frame; start offset matches its dash (380) so the
+   outline begins fully hidden and inks itself on in one pass. */
+@keyframes draw-frame {
+  from {
+    stroke-dashoffset: 380;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Ink wipe for the corner monogram — reveals the cursive letter left-to-right
+   so it reads as being written in by hand. */
+@keyframes inkwrite {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Slow "live now" ping that expands and fades behind the status dot. */
+@keyframes ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  70%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   /* `backwards` (not `forwards`) so the element reverts to transform:none
@@ -162,6 +202,21 @@
   /* Re-inks the underline quickly on hover (remounted via React key). */
   .retrace {
     animation: scribble 0.5s ease-out;
+  }
+  /* Re-draws the sticker's marker frame on hover (remounted via React key). */
+  .retrace-frame {
+    animation: draw-frame 0.55s ease-out;
+  }
+  .live-ping {
+    animation: ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  /* Monogram writes itself in on entrance… */
+  .inkwrite {
+    animation: inkwrite 0.9s 0.5s ease-out backwards;
+  }
+  /* …and re-inks (faster, no delay) when hovered — remounted via React key. */
+  .inkwrite-re {
+    animation: inkwrite 0.7s ease-out;
   }
   .peel-hint {
     transform-origin: 72% 22%; /* pivot near a top corner, like a lifted flap */

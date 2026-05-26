@@ -79,8 +79,28 @@ export function DraggableSticker({
   );
 }
 
+/* Corner script monogram that writes itself in on load and re-inks on hover
+   (the key remount replays the wipe), echoing the page's drawn-by-hand feel. */
+export function Monogram({ children }: { children: string }) {
+  const [trace, setTrace] = useState(0);
+  return (
+    <span
+      onMouseEnter={() => setTrace((t) => t + 1)}
+      className="select-none pt-1 font-script text-6xl leading-none text-muted/70"
+    >
+      <span
+        key={trace}
+        className={`inline-block ${trace === 0 ? "inkwrite" : "inkwrite-re"}`}
+      >
+        {children}
+      </span>
+    </span>
+  );
+}
+
 /* Hand-cut sticky note for dates — uneven corners + a light tilt so the
-   writing list reads like little notes pinned to the page. */
+   writing list reads like little notes pinned to the page. Lifts and
+   straightens when its row is hovered, like the project stickers. */
 export function DateTag({
   children,
   tilt,
@@ -90,7 +110,7 @@ export function DateTag({
 }) {
   return (
     <span
-      className={`${tilt} sticky-note inline-block shrink-0 px-2 py-[3px] font-mono text-[0.68rem] leading-none tabular-nums`}
+      className={`${tilt} sticky-note inline-block shrink-0 px-2 py-[3px] font-mono text-[0.68rem] leading-none tabular-nums transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:rotate-0`}
       style={{ borderRadius: "9px 6px 8px 6px / 6px 8px 6px 9px" }}
     >
       {children}
@@ -116,7 +136,13 @@ const MARKER = {
    edges overshoot the corners — the way a felt-tip looks when you box something
    in twice. `vector-effect` keeps the line an even weight however wide the badge
    stretches; the second pass is fainter, for that "gone over it again" feel. */
-function MarkerFrame({ stroke }: { stroke: string }) {
+function MarkerFrame({
+  stroke,
+  traceKey = 0,
+}: {
+  stroke: string;
+  traceKey?: number;
+}) {
   return (
     <svg
       viewBox="0 0 120 44"
@@ -124,7 +150,11 @@ function MarkerFrame({ stroke }: { stroke: string }) {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 size-full overflow-visible"
     >
+      {/* Remounting the group (via the key) replays the re-trace; the dash
+          props inherit down to both passes, so the whole frame re-inks. */}
       <g
+        key={traceKey}
+        className={traceKey > 0 ? "retrace-frame" : undefined}
         fill="none"
         stroke={stroke}
         strokeWidth="1.6"
@@ -159,6 +189,9 @@ export function Sticker({
   tilt: string;
 }) {
   const stroke = MARKER[color];
+  // Bumping this on hover remounts the frame so it re-inks itself.
+  const [trace, setTrace] = useState(0);
+  const reInk = () => setTrace((t) => t + 1);
   const className = `${tilt} relative inline-flex shrink-0 items-center px-3 py-[4px] font-hand text-[1.05rem] leading-none`;
   const style = {
     color: stroke,
@@ -170,13 +203,13 @@ export function Sticker({
   };
   const inner = (
     <>
-      <MarkerFrame stroke={stroke} />
+      <MarkerFrame stroke={stroke} traceKey={trace} />
       <span className="relative">{badge}</span>
     </>
   );
   if (!href) {
     return (
-      <span className={className} style={style}>
+      <span className={className} style={style} onMouseEnter={reInk}>
         {inner}
       </span>
     );
@@ -185,6 +218,7 @@ export function Sticker({
     <a
       href={href}
       aria-label={`${label} — open`}
+      onMouseEnter={reInk}
       className={`${className} transition-transform duration-200 hover:-translate-y-0.5 hover:rotate-0`}
       style={style}
     >
@@ -309,6 +343,78 @@ export function LinkDoodle() {
         <path d="M6.6,2.9 C9.4,2.7 12.4,2.9 12.9,3.2 C13.2,4.2 13.2,7 13,9.4" />
       </g>
     </svg>
+  );
+}
+
+/* Small "live now" dot — a marker-green blob with a slow ping ring, an
+   ambient "I'm around" indicator at the right edge of the elsewhere links. */
+export function LiveDot() {
+  return (
+    <span className="relative inline-block size-[7px]">
+      <span
+        className="live-ping absolute inset-0 rounded-full"
+        style={{ background: "var(--color-marker-green)" }}
+      />
+      <span
+        className="absolute inset-0 rounded-full"
+        style={{ background: "var(--color-marker-green)" }}
+      />
+    </span>
+  );
+}
+
+/* Shared look for the "elsewhere" links so the plain and copy-to-clipboard
+   variants stay in sync. */
+export const elsewhereLink =
+  "group/link relative font-mono text-[0.78rem] text-soft underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:text-ink hover:decoration-current";
+
+/* An "elsewhere" link for an email: opens the mailto as usual, but also copies
+   the address and peels up a handwritten "copied!" sticky that fades on its
+   own. Clipboard failures are ignored — the mailto still fires. */
+export function CopyEmailLink({
+  href,
+  label,
+}: {
+  href: string;
+  label: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<number | undefined>(undefined);
+
+  const copy = () => {
+    const email = href.replace(/^mailto:/, "");
+    navigator.clipboard?.writeText(email).then(
+      () => {
+        setCopied(true);
+        window.clearTimeout(timer.current);
+        timer.current = window.setTimeout(() => setCopied(false), 1300);
+      },
+      () => {},
+    );
+    // No preventDefault: let the mailto open the user's mail client too.
+  };
+
+  return (
+    <a href={href} onClick={copy} className={elsewhereLink}>
+      {label}
+      <LinkDoodle />
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute bottom-full left-1/2 z-40 mb-1.5 -translate-x-1/2 -rotate-2 whitespace-nowrap border px-2 py-[3px] font-hand text-[0.8rem] leading-none text-(--ok) transition-[opacity,transform] duration-200 ${copied ? "scale-100 opacity-100" : "scale-90 opacity-0"}`}
+        style={
+          {
+            "--ok": "var(--color-marker-green)",
+            borderColor:
+              "color-mix(in srgb, var(--color-marker-green) 55%, transparent)",
+            backgroundColor: "var(--color-paper)",
+            borderRadius: "9px 6px 8px 6px / 6px 8px 6px 9px",
+            boxShadow: "0 1px 1px rgba(0,0,0,0.04), 0 3px 6px rgba(0,0,0,0.09)",
+          } as CSSProperties
+        }
+      >
+        copied!
+      </span>
+    </a>
   );
 }
 

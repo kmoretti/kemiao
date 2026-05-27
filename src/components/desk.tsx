@@ -189,15 +189,19 @@ export function ProjectDetail({
   blurb,
   stack,
   href,
+  site,
   color,
   stamp,
 }: {
   blurb: string;
   stack?: string[];
   href?: string;
+  site?: string;
   color: keyof typeof MARKER;
   stamp: string;
 }) {
+  const detailLink =
+    "group/link relative inline-flex items-center font-mono text-[0.7rem] text-soft underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:text-ink hover:decoration-current";
   return (
     <div className="mb-1 mt-2.5">
       <p className="framed-note py-2 font-mono text-[0.72rem] font-medium leading-[1.5] text-soft">
@@ -209,13 +213,18 @@ export function ProjectDetail({
             {stack.join("  ·  ")}
           </span>
         )}
-        <span className="ml-auto flex shrink-0 items-center gap-3">
+        {/* gap-5 clears the absolute link arrows from the next link; pr-5
+            keeps the rightmost arrow inside the overflow-clipped fold panel. */}
+        <span className="ml-auto flex shrink-0 items-center gap-5 pr-5">
           <HandStamp color={color}>{stamp}</HandStamp>
+          {site && (
+            <a href={site} className={detailLink}>
+              Website
+              <LinkDoodle />
+            </a>
+          )}
           {href && (
-            <a
-              href={href}
-              className="group/link relative inline-flex items-center font-mono text-[0.7rem] text-soft underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:text-ink hover:decoration-current"
-            >
+            <a href={href} className={detailLink}>
               GitHub
               <LinkDoodle />
             </a>
@@ -341,6 +350,24 @@ export function LinkDoodle() {
         <path d="M3,12.6 C7,9 10,6 12.7,3.1" />
         <path d="M6.6,2.9 C9.4,2.7 12.4,2.9 12.9,3.2 C13.2,4.2 13.2,7 13,9.4" />
       </g>
+    </svg>
+  );
+}
+
+/* Small hand-drawn heart inked in marker red — flags a link as a "support me"
+   gesture rather than just another profile link. Slightly off-kilter so it
+   reads as scrawled, not stamped. */
+export function HeartDoodle() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      className="mr-1 inline-block size-3 -translate-y-px -rotate-6 align-middle text-marker motion-safe:group-hover/link:animate-heartbeat"
+    >
+      <path
+        fill="currentColor"
+        d="M8,13.6 C8,13.6 2.2,9.5 2.1,5.7 C2,3.9 3.5,2.7 5.1,3 C6.4,3.2 7.5,4.2 8,5.2 C8.6,4.1 9.6,3.2 10.9,3 C12.5,2.7 14,3.9 13.9,5.7 C13.8,9.5 8,13.6 8,13.6 Z"
+      />
     </svg>
   );
 }

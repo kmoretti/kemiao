@@ -11,6 +11,7 @@ import {
   CopyEmailLink,
   DateTag,
   elsewhereLink,
+  HeartDoodle,
   LinkDoodle,
   LiveDot,
   ProjectDetail,
@@ -75,9 +76,10 @@ export function Artifacts() {
           <RowShell key={r.label}>
             <a
               href={r.href}
-              className="min-w-0 text-[0.95rem] leading-snug text-ink underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:decoration-ink/40"
+              className="group/link relative min-w-0 text-[0.95rem] leading-snug text-ink underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:decoration-ink/40"
             >
               {r.label}
+              <LinkDoodle />
             </a>
             <DateTag tilt={i % 2 === 0 ? "-rotate-2" : "rotate-1"}>
               {r.date}
@@ -127,6 +129,7 @@ function ProjectRow({
             blurb={r.blurb ?? ""}
             stack={r.stack}
             href={r.href}
+            site={r.site}
             color={r.color}
             stamp={r.stamp}
           />
@@ -170,6 +173,7 @@ export function Elsewhere() {
               <CopyEmailLink href={l.href} label={l.label} />
             ) : (
               <a href={l.href} className={elsewhereLink}>
+                {l.heart && <HeartDoodle />}
                 {l.label}
                 <LinkDoodle />
               </a>

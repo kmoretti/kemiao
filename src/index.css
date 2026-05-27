@@ -50,6 +50,9 @@
   --color-note-ink: #3a5ba0;
   /* olive stamp ink, darkened to meet WCAG AA 4.5:1 on paper (4.59:1). */
   --color-stamp: #7a6f3e;
+
+  /* "Lub-dub" beat for the sponsor heart on hover (see @keyframes heartbeat). */
+  --animate-heartbeat: heartbeat 0.9s ease-in-out infinite;
 }
 
 @layer base {
@@ -198,6 +201,25 @@
   100% {
     transform: scale(2.4);
     opacity: 0;
+  }
+}
+/* "Lub-dub" heartbeat for the sponsor heart on hover — two quick beats then a
+   beat of rest before repeating. The base translate/rotate is carried through
+   every step so the heart's tilt holds while it pulses. */
+@keyframes heartbeat {
+  0%,
+  55%,
+  100% {
+    transform: translateY(-1px) rotate(-6deg) scale(1);
+  }
+  14% {
+    transform: translateY(-1px) rotate(-6deg) scale(1.28);
+  }
+  28% {
+    transform: translateY(-1px) rotate(-6deg) scale(1);
+  }
+  42% {
+    transform: translateY(-1px) rotate(-6deg) scale(1.18);
   }
 }
 

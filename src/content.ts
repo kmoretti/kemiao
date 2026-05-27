@@ -28,16 +28,18 @@ export const experience: Entry[] = [
 ];
 
 // A project. `date` shows on the row's hand-cut sticky tag. `href` is optional
-// — omit it for closed-source / unlinked projects. `blurb` and `stack` fill the
-// detail revealed when the row is clicked. `stamp` is the short word scrawled in
-// the hand-drawn marker stamp on that detail, and `color` picks the marker
-// accent it's inked in.
+// — omit it for closed-source / unlinked projects. `site` is an optional live /
+// official site shown next to the repo link. `blurb` and `stack` fill the detail
+// revealed when the row is clicked. `stamp` is the short word scrawled in the
+// hand-drawn marker stamp on that detail, and `color` picks the marker accent
+// it's inked in.
 export type Project = {
   label: string;
   date: string;
   color: "red" | "green" | "blue";
   stamp: string;
   href?: string;
+  site?: string;
   blurb?: string;
   stack?: string[];
 };
@@ -46,6 +48,7 @@ export const projects: Project[] = [
   {
     label: "Ech0 — self-hosted microblog",
     href: "https://github.com/lin-snow/Ech0",
+    site: "https://ech0.app",
     date: "2025",
     color: "red",
     stamp: "popular",
@@ -92,7 +95,9 @@ export const artifacts: Entry[] = [
   },
 ];
 
-export type Link = { label: string; href: string };
+// `heart: true` marks a "support me" link (rendered with a hand-drawn heart) so
+// it reads as a CTA rather than just another profile link.
+export type Link = { label: string; href: string; heart?: boolean };
 
 export const links: Link[] = [
   { label: "GitHub", href: "https://github.com/lin-snow" },
@@ -100,4 +105,5 @@ export const links: Link[] = [
   { label: "Memo", href: "https://memo.sn0w.fyi" },
   { label: "CV", href: "https://cv.sn0w.fyi" },
   { label: "Email", href: "mailto:l1nsn0w@qq.com" },
+  { label: "Sponsor", href: "https://sponsor.sn0w.fyi", heart: true },
 ];

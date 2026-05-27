@@ -78,17 +78,17 @@ export const artifacts: Entry[] = [
   {
     label: "2025 Year in Review",
     date: "2026.01",
-    href: "https://blog.vaaat.com/posts/2025_summary/",
+    href: "https://blog.sn0w.fyi/posts/2025_summary/",
   },
   {
     label: "2024 Year in Review",
     date: "2025.01",
-    href: "https://blog.vaaat.com/posts/2024_summary/",
+    href: "https://blog.sn0w.fyi/posts/2024_summary/",
   },
   {
     label: "2023 Year in Review",
     date: "2024.01",
-    href: "https://blog.vaaat.com/posts/2023_summary/",
+    href: "https://blog.sn0w.fyi/posts/2023_summary/",
   },
 ];
 
@@ -96,8 +96,8 @@ export type Link = { label: string; href: string };
 
 export const links: Link[] = [
   { label: "GitHub", href: "https://github.com/lin-snow" },
-  { label: "Blog", href: "https://blog.vaaat.com" },
-  { label: "Memo", href: "https://memo.vaaat.com" },
-  { label: "CV", href: "https://cv.vaaat.com" },
+  { label: "Blog", href: "https://blog.sn0w.fyi" },
+  { label: "Memo", href: "https://memo.sn0w.fyi" },
+  { label: "CV", href: "https://cv.sn0w.fyi" },
   { label: "Email", href: "mailto:l1nsn0w@qq.com" },
 ];

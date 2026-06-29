@@ -59,11 +59,37 @@
   --animate-heartbeat: heartbeat 0.9s ease-in-out infinite;
 }
 
+/* Night desk — dark paper, warm soft glow. Markers and inks gain extra
+   saturation against the deep background so they still pop like real
+   highlighters under a desk lamp. */
+.dark {
+  --color-paper: #171512;
+  --color-ink: #e0d8cc;
+  --color-soft: #9a9282;
+  --color-muted: #8a8270;
+  --color-hair: #2f2b26;
+
+  --color-sticky: #4a4220;
+  --color-sticky-ink: #e8d86a;
+  --color-marker: #ff6b58;
+  --color-marker-green: #5dbf7a;
+  --color-marker-blue: #6a8fd4;
+  --color-note: #222a48;
+  --color-note-ink: #8ab4f8;
+  --color-stamp: #a89a50;
+
+  --color-contact: #1a3838;
+  --color-contact-ink: #5dd4c0;
+}
+
 @layer base {
   html {
     color-scheme: light;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  html.dark {
+    color-scheme: dark;
   }
   body {
     margin: 0;
@@ -94,8 +120,8 @@
     background: var(--color-sticky);
     color: var(--color-sticky-ink);
     box-shadow:
-      0 1px 1px rgba(0, 0, 0, 0.04),
-      0 6px 14px -8px rgba(91, 80, 20, 0.45);
+      0 1px 1px rgba(0, 0, 0, 0.08),
+      0 6px 14px -8px color-mix(in srgb, var(--color-sticky-ink) 45%, transparent);
   }
 
   /* Rubber stamp */

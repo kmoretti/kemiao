@@ -71,6 +71,7 @@ export function Experience() {
 
 export function Artifacts() {
   const [rssEntries, setRssEntries] = useState<Entry[] | null>(null);
+  const [rssTotal, setRssTotal] = useState(0);
 
   useEffect(() => {
     if (artifactsConfig.mode !== "rss" || !artifactsConfig.rssUrl) return;
@@ -78,13 +79,17 @@ export function Artifacts() {
     fetch(`/api/rss?url=${encodeURIComponent(artifactsConfig.rssUrl)}`)
       .then((res) => (res.ok ? res.json() : Promise.reject()))
       .then((data: Entry[]) => {
-        if (!cancelled) setRssEntries(data.slice(0, artifactsConfig.showCount));
+        if (!cancelled) {
+          setRssTotal(data.length);
+          setRssEntries(data.slice(0, artifactsConfig.showCount));
+        }
       })
       .catch(() => {});
     return () => { cancelled = true; };
   }, []);
 
   const source = rssEntries ?? artifacts;
+  const showMore = artifactsConfig.mode === "rss" && rssTotal > artifactsConfig.showCount && artifactsConfig.moreHref;
 
   return (
     <section className="rise mt-9" style={{ animationDelay: "300ms" }}>
@@ -105,6 +110,9 @@ export function Artifacts() {
           </RowShell>
         ))}
       </ul>
+      {showMore && (
+        <ProjectsMoreBtn href={artifactsConfig.moreHref} label="view all" />
+      )}
     </section>
   );
 }

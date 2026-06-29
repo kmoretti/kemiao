@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -551,7 +552,7 @@ function MoreArrow() {
 /* "View more on GitHub" stamp — a small rubber-stamp button at the bottom-right
    of the Projects section. Visible only when the number of projects exceeds
    `showCount`. */
-export function ProjectsMoreBtn({ href }: { href: string }) {
+export function ProjectsMoreBtn({ href, label }: { href: string; label?: string }) {
   return (
     <div className="mt-3 flex justify-end">
       <a
@@ -560,9 +561,118 @@ export function ProjectsMoreBtn({ href }: { href: string }) {
         rel="noopener noreferrer"
         className="stamp group/more inline-flex -rotate-1 items-center gap-1 rounded-[3px] px-2.5 py-[5px] font-mono text-[0.6rem] font-medium uppercase tracking-[0.12em] no-underline transition-transform duration-200 hover:-translate-y-0.5 hover:rotate-0"
       >
-        more on github
+        {label ?? "more on github"}
         <MoreArrow />
       </a>
     </div>
+  );
+}
+
+/* Hand-drawn night/day toggle — a quick ink sketch in the margin, like
+   someone doodled a moon or sun next to the monogram. Uses the same hover
+   re-trace as HandUnderline so the ink feels alive.
+
+   Light page → shows a crescent moon + star flecks (click → dark mode).
+   Dark page  → shows a wobbly sun sketch (click → light mode). */
+export function ThemeToggle() {
+  const [trace, reTrace] = useHoverReplay();
+  const [dark, setDark] = useState(() => {
+    const stored = localStorage.getItem("theme");
+    if (stored) return stored === "dark";
+    return matchMedia("(prefers-color-scheme: dark)").matches;
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("theme", dark ? "dark" : "light");
+  }, [dark]);
+
+  return (
+    <button
+      type="button"
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      onClick={() => setDark((d) => !d)}
+      onMouseEnter={reTrace}
+      className="group/theme -rotate-3 cursor-pointer select-none text-muted/70 transition-transform duration-200 hover:-translate-y-0.5 hover:rotate-0 hover:text-ink/80"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="block size-[28px] overflow-visible"
+      >
+        {dark ? (
+          <g key={trace}>
+            <path
+              className={trace === 0 ? "scribble" : "retrace"}
+              d="M12,4 C7.5,4.5 4.5,8 4.5,12.5 C4.5,17.5 8,21 13,21 C16,21 19,19 20.5,16 C17.5,17 14,16.5 11.5,14 C9,11.5 8.5,8 10,5.5 C10.5,4.5 11,4 12,4 Z"
+            />
+            <path
+              className={trace === 0 ? "scribble" : "retrace"}
+              d="M19,6 C19.5,5.5 20.8,6.2 20.5,7"
+              style={{ animationDelay: "0.2s" }}
+            />
+            <path
+              className={trace === 0 ? "scribble" : "retrace"}
+              d="M17.5,3 C18.2,2.5 19,3.5 18.5,4.2"
+              style={{ animationDelay: "0.35s" }}
+            />
+          </g>
+        ) : (
+          <g key={trace}>
+            <path
+              className={trace === 0 ? "scribble" : "retrace"}
+              d="M12,4.5 C16,4.5 19.5,7.5 19.5,12 C19.5,16.5 16,19.5 12,19.5 C8,19.5 4.5,16.5 4.5,12 C4.5,7.5 8,4.5 12,4.5 Z"
+            />
+            <g strokeWidth="2">
+              <path
+                className={trace === 0 ? "scribble" : "retrace"}
+                d="M12,2 L12,3.5"
+                style={{ animationDelay: "0.1s" }}
+              />
+              <path
+                className={trace === 0 ? "scribble" : "retrace"}
+                d="M12,20.5 L12,22"
+                style={{ animationDelay: "0.15s" }}
+              />
+              <path
+                className={trace === 0 ? "scribble" : "retrace"}
+                d="M18.5,5.5 L17.3,6.7"
+                style={{ animationDelay: "0.2s" }}
+              />
+              <path
+                className={trace === 0 ? "scribble" : "retrace"}
+                d="M6.7,17.3 L5.5,18.5"
+                style={{ animationDelay: "0.25s" }}
+              />
+              <path
+                className={trace === 0 ? "scribble" : "retrace"}
+                d="M22,12 L20.5,12"
+                style={{ animationDelay: "0.3s" }}
+              />
+              <path
+                className={trace === 0 ? "scribble" : "retrace"}
+                d="M3.5,12 L2,12"
+                style={{ animationDelay: "0.35s" }}
+              />
+              <path
+                className={trace === 0 ? "scribble" : "retrace"}
+                d="M18.5,18.5 L17.3,17.3"
+                style={{ animationDelay: "0.4s" }}
+              />
+              <path
+                className={trace === 0 ? "scribble" : "retrace"}
+                d="M6.7,6.7 L5.5,5.5"
+                style={{ animationDelay: "0.45s" }}
+              />
+            </g>
+          </g>
+        )}
+      </svg>
+    </button>
   );
 }

@@ -9,6 +9,7 @@ import {
   Monogram,
   Pushpin,
   QrPopover,
+  ThemeToggle,
 } from "./desk";
 
 /* Phrase-level accents for the intro copy. Each phrase gets a different
@@ -94,7 +95,10 @@ export function Intro() {
             />
           </span>
         </DraggableSticker>
-        <Monogram>{intro.initial}</Monogram>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <Monogram>{intro.initial}</Monogram>
+        </div>
       </header>
 
       <div

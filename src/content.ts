@@ -84,7 +84,7 @@ export const projects: Project[] = [
 
 export const projectsConfig = {
   showCount: 5,
-  moreHref: "https://github.com/kmoretti",
+  moreHref: "https://s.081531.xyz/github",
 };
 
 export const artifacts: Entry[] = [
@@ -109,6 +109,7 @@ export const artifactsConfig = {
   mode: "rss" as "manual" | "rss",
   rssUrl: "https://blog.081531.xyz/rss.xml",
   showCount: 5,
+  moreHref: "https://blog.081531.xyz",
 };
 
 // `heart: true` marks a "support me" link (rendered with a hand-drawn heart) so
@@ -116,9 +117,9 @@ export const artifactsConfig = {
 export type Link = { label: string; href: string; heart?: boolean };
 
 export const links: Link[] = [
-  { label: "GitHub", href: "https://github.com/lin-snow" },
-  { label: "Blog", href: "https://blog.sn0w.fyi" },
-  { label: "Memo", href: "https://memo.sn0w.fyi" },
-  { label: "CV", href: "https://cv.sn0w.fyi" },
+  { label: "GitHub", href: "https://s.081531.xyz/github" },
+  { label: "Blog", href: "https://s.081531.xyz/blog" },
+  { label: "Ech0", href: "https://m.081531.xyz" },
+  { label: "Guide", href: "https://s.081531.xyz/home" },
   { label: "Sponsor", href: "https://sponsor.sn0w.fyi", heart: true },
 ];

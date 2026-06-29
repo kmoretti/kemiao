@@ -1,15 +1,11 @@
-interface Env {
-  ASSETS: { fetch: (request: Request) => Promise<Response> };
-}
-
 interface RssEntry {
   label: string;
   href: string;
   date: string;
 }
 
-function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, "");
+function stripHtml(text: string): string {
+  return text.replace(/<[^>]*>/g, "");
 }
 
 function decodeEntities(text: string): string {
@@ -17,10 +13,8 @@ function decodeEntities(text: string): string {
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, "\"")
-    .replace(/&#39;/g, "'")
-    .replace(/&#x27;/g, "'")
-    .replace(/&#x2F;/g, "/");
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
 }
 
 function extractText(raw: string, tag: string): string {
@@ -40,9 +34,7 @@ function formatDate(dateStr: string): string {
   try {
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    return `${y}.${m}`;
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}`;
   } catch {
     return dateStr;
   }
@@ -63,9 +55,7 @@ function parseAtom(xml: string): RssEntry[] {
     let href = "";
     const linkM = entry.match(/<link[^>]*href="([^"]*)"/);
     if (linkM) href = linkM[1];
-
     const published = extractText(entry, "published") || extractText(entry, "updated");
-
     return {
       label: extractText(entry, "title"),
       href,
@@ -74,8 +64,8 @@ function parseAtom(xml: string): RssEntry[] {
   });
 }
 
-async function handleRss(request: Request): Promise<Response> {
-  const url = new URL(request.url);
+export default function onRequest(context: { request: Request }) {
+  const url = new URL(context.request.url);
   const feedUrl = url.searchParams.get("url");
   if (!feedUrl) {
     return new Response(JSON.stringify({ error: "Missing 'url' query parameter" }), {
@@ -84,40 +74,25 @@ async function handleRss(request: Request): Promise<Response> {
     });
   }
 
-  try {
-    const res = await fetch(feedUrl);
-    if (!res.ok) {
-      return new Response(JSON.stringify({ error: `Feed fetch failed: ${res.status}` }), {
+  return fetch(feedUrl)
+    .then((res) => {
+      if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
+      return res.text();
+    })
+    .then((xml) => {
+      const isAtom = /<feed[\s>]/i.test(xml);
+      const entries = isAtom ? parseAtom(xml) : parseRss(xml);
+      return new Response(JSON.stringify(entries), {
+        headers: {
+          "content-type": "application/json",
+          "cache-control": "public, max-age=600",
+        },
+      });
+    })
+    .catch((err: Error) => {
+      return new Response(JSON.stringify({ error: err.message }), {
         status: 502,
         headers: { "content-type": "application/json" },
       });
-    }
-    const xml = await res.text();
-
-    const isAtom = /<feed[\s>]/i.test(xml);
-    const entries = isAtom ? parseAtom(xml) : parseRss(xml);
-
-    return new Response(JSON.stringify(entries), {
-      headers: {
-        "content-type": "application/json",
-        "access-control-allow-origin": "*",
-        "cache-control": "public, max-age=600",
-      },
     });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
-      status: 500,
-      headers: { "content-type": "application/json" },
-    });
-  }
 }
-
-export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-    if (url.pathname === "/api/rss") {
-      return handleRss(request);
-    }
-    return env.ASSETS.fetch(request);
-  },
-};

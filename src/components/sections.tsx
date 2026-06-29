@@ -1,9 +1,11 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   artifacts,
+  artifactsConfig,
   experience,
   links,
   projects,
+  projectsConfig,
   type Entry,
   type Project,
 } from "../content";
@@ -14,6 +16,7 @@ import {
   LinkDoodle,
   LiveDot,
   ProjectDetail,
+  ProjectsMoreBtn,
   SectionLabel,
   Stamp,
 } from "./desk";
@@ -67,12 +70,28 @@ export function Experience() {
 }
 
 export function Artifacts() {
+  const [rssEntries, setRssEntries] = useState<Entry[] | null>(null);
+
+  useEffect(() => {
+    if (artifactsConfig.mode !== "rss" || !artifactsConfig.rssUrl) return;
+    let cancelled = false;
+    fetch(`/api/rss?url=${encodeURIComponent(artifactsConfig.rssUrl)}`)
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: Entry[]) => {
+        if (!cancelled) setRssEntries(data.slice(0, artifactsConfig.showCount));
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
+  const source = rssEntries ?? artifacts;
+
   return (
     <section className="rise mt-9" style={{ animationDelay: "300ms" }}>
       <SectionLabel>artifacts</SectionLabel>
       <ul>
-        {artifacts.map((r: Entry, i) => (
-          <RowShell key={r.label}>
+        {source?.map((r: Entry, i) => (
+          <RowShell key={r.href ?? r.label}>
             <a
               href={r.href}
               className="group/link relative min-w-0 text-[0.95rem] leading-snug text-ink underline decoration-transparent underline-offset-4 transition-colors duration-200 hover:decoration-ink/40"
@@ -141,11 +160,13 @@ function ProjectRow({
 export function Projects() {
   // Only one project sits open at a time; clicking the open row closes it.
   const [openLabel, setOpenLabel] = useState<string | null>(null);
+  const visible = projects.slice(0, projectsConfig.showCount);
+  const showMore = projects.length >= projectsConfig.showCount;
   return (
     <section className="rise mt-9" style={{ animationDelay: "400ms" }}>
       <SectionLabel>projects</SectionLabel>
       <ul>
-        {projects.map((r: Project, i) => (
+        {visible.map((r: Project, i) => (
           <ProjectRow
             key={r.label}
             r={r}
@@ -157,6 +178,9 @@ export function Projects() {
           />
         ))}
       </ul>
+      {showMore && projectsConfig.moreHref && (
+        <ProjectsMoreBtn href={projectsConfig.moreHref} />
+      )}
     </section>
   );
 }

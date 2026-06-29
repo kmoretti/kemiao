@@ -1,9 +1,8 @@
 {
-  // Static site served by Workers Static Assets — no Worker script needed.
-  // Cloudflare runs `bun run build`, then deploys the contents of ./dist.
   "name": "sn0w",
   "compatibility_date": "2026-05-27",
   "assets": {
     "directory": "./dist"
-  }
+  },
+  "main": "src/worker.ts"
 }

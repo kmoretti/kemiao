@@ -8,6 +8,7 @@ import {
   MarkerHighlight,
   Monogram,
   Pushpin,
+  QrPopover,
 } from "./desk";
 
 /* Phrase-level accents for the intro copy. Each phrase gets a different
@@ -39,6 +40,25 @@ const ACCENTS: { phrase: string; wrap: (s: string) => ReactNode }[] = [
       <HandUnderline color="blue" note="★ my comfort game">
         {s}
       </HandUnderline>
+    ),
+  },
+  {
+    phrase: "Lord of the Mysteries",
+    wrap: (s) => (
+      <>
+        <HandUnderline color="blue" note="the novel I love">
+          {s}
+        </HandUnderline>{" "}
+        <a
+          href={intro.lotm}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="sticky-note inline-block -rotate-1 px-2 py-[3px] font-mono text-[0.68rem] leading-none no-underline transition-transform duration-200 hover:-translate-y-0.5 hover:rotate-0"
+          style={{ borderRadius: "9px 6px 8px 6px / 6px 8px 6px 9px" }}
+        >
+          bangumi
+        </a>
+      </>
     ),
   },
 ];
@@ -101,7 +121,25 @@ export function Intro() {
           className="font-medium underline underline-offset-2"
         >
           GitHub
-        </a>{" "}
+        </a>
+        ,{" "}
+        <QrPopover src={intro.telegram} label="Telegram">
+          <a
+            href={intro.telegram}
+            className="contact rounded-[5px_3px_6px_4px_/_3px_6px_4px_5px] px-1.5 font-medium no-underline"
+          >
+            Telegram
+          </a>
+        </QrPopover>
+        ,{" "}
+        <QrPopover src={intro.qq} label="QQ">
+          <a
+            href={intro.qq}
+            className="contact rounded-[5px_3px_6px_4px_/_3px_6px_4px_5px] px-1.5 font-medium no-underline"
+          >
+            QQ
+          </a>
+        </QrPopover>{" "}
         or{" "}
         <a
           href={intro.message}

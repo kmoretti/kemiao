@@ -486,3 +486,83 @@ export function SectionLabel({ children }: { children: string }) {
     </div>
   );
 }
+
+/* QR code popover — on hover, a polaroid-style card appears below the link
+   showing a QR code image. Uses the same group-hover reveal as Annotation,
+   but for images instead of text. */
+export function QrPopover({
+  src,
+  label,
+  children,
+}: {
+  src: string;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <span className="group/qr relative inline-block">
+      {children}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 z-50 mt-0.5 -translate-x-1/2 rotate-1 scale-90 w-max whitespace-nowrap opacity-0 transition-[opacity,transform] duration-200 group-hover/qr:scale-100 group-hover/qr:opacity-100"
+        style={{
+          top: "100%",
+          backgroundColor: "white",
+          borderRadius: "10px 8px 11px 9px / 8px 11px 9px 10px",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 8px 20px -4px rgba(0,0,0,0.15)",
+          padding: "6px",
+        }}
+      >
+        <img
+          src={src}
+          alt={`QR code for ${label}`}
+          width={128}
+          height={128}
+          className="block size-[128px] rounded-sm"
+          draggable={false}
+        />
+      </span>
+    </span>
+  );
+}
+
+/* Hand-drawn ↗ arrow — a tiny marker scribble for the "view more" button. */
+function MoreArrow() {
+  return (
+    <svg
+      viewBox="0 0 18 18"
+      aria-hidden="true"
+      className="inline-block size-[14px] -translate-y-px overflow-visible align-middle"
+    >
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M4.5,13.5 C8,10.5 11.5,7.5 14.5,4.5" />
+        <path d="M9.5,4.5 C12,3.8 14,4.2 14.5,5 C14.8,6.5 14.2,9.5 13.5,12" />
+      </g>
+    </svg>
+  );
+}
+
+/* "View more on GitHub" stamp — a small rubber-stamp button at the bottom-right
+   of the Projects section. Visible only when the number of projects exceeds
+   `showCount`. */
+export function ProjectsMoreBtn({ href }: { href: string }) {
+  return (
+    <div className="mt-3 flex justify-end">
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="stamp group/more inline-flex -rotate-1 items-center gap-1 rounded-[3px] px-2.5 py-[5px] font-mono text-[0.6rem] font-medium uppercase tracking-[0.12em] no-underline transition-transform duration-200 hover:-translate-y-0.5 hover:rotate-0"
+      >
+        more on github
+        <MoreArrow />
+      </a>
+    </div>
+  );
+}

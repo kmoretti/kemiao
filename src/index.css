@@ -51,6 +51,10 @@
   /* olive stamp ink, darkened to meet WCAG AA 4.5:1 on paper (4.59:1). */
   --color-stamp: #7a6f3e;
 
+  /* Cyan contact tag */
+  --color-contact: #d5efe8;
+  --color-contact-ink: #1a7a6a;
+
   /* "Lub-dub" beat for the sponsor heart on hover (see @keyframes heartbeat). */
   --animate-heartbeat: heartbeat 0.9s ease-in-out infinite;
 }
@@ -106,6 +110,12 @@
   .note {
     background: var(--color-note);
     color: var(--color-note-ink);
+  }
+
+  /* Cyan contact tag */
+  .contact {
+    background: var(--color-contact);
+    color: var(--color-contact-ink);
   }
 
   /* Unfolding project card. The 0fr→1fr grid-rows trick animates to the

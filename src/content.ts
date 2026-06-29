@@ -1,18 +1,22 @@
 // All page copy lives here so it's easy to edit without touching layout.
 
 export const intro = {
-  name: "L1nSn0w",
-  initial: "L", // used for the corner script monogram
+  name: "克喵Moretti",
+  initial: "M", // used for the corner script monogram
   lines: [
-    "Hi, I'm L1nSn0w — a 22-year-old Software Engineering student at GDUT, based in China.",
-    "A full-stack dev at heart, with a soft spot for well-made products and design — the Apple & Google kind.",
-    "Off the clock I'm hunting down clever software, playing The Finals, or talking tech with anyone who'll listen.",
+    "Hi, I'm 克喵Moretti, a 20-year-old college student from Suzhou, Jiangsu. I'm currently a junior studying in Nanjing, majoring in Automation Technology and Application.",
+    "My ID comes from the novel *Lord of the Mysteries*. I usually enjoy reading novels, tweaking my blog, and browsing online communities.",
+    "I like to look for interesting articles and projects on GitHub and friend links, and then try to implement them. When I come across a fun blog, I'll also try to deploy and modify it~"
+
   ],
   // Shown as the blue marginalia note.
   status:
-    "Currently interning at LangGenius — open to open-source collaborations.",
-  github: "https://github.com/lin-snow",
-  message: "mailto:l1nsn0w@qq.com",
+    "Upcoming intern at Schneider Electric — open to open-source collaborations.",
+  github: "https://s.081531.xyz/github",
+  telegram: "https://imgbed.081531.xyz/file/telegram/image(3).png",
+  qq: "https://imgbed.081531.xyz/file/telegram/image(2).png",
+  message: "https://s.081531.xyz/mail",
+  lotm: "https://bangumi.tv/subject/290411",
 } as const;
 
 // A dated row: the label on the left, the date on the right.
@@ -23,8 +27,8 @@ export type Entry = {
 };
 
 export const experience: Entry[] = [
-  { label: "Backend Software Engineer, LangGenius", date: "2025–Present" },
-  { label: "B.Eng. Software Engineering, GDUT", date: "in progress" },
+  { label: "Studying at NIIT", date: "2023–Present" },
+  { label: "Interning at Schneider Electric", date: "Right away" },
 ];
 
 // A project. `date` shows on the row's hand-cut sticky tag. `href` is optional
@@ -46,36 +50,42 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    label: "Ech0 — self-hosted microblog",
-    href: "https://github.com/lin-snow/Ech0",
-    site: "https://ech0.app",
-    date: "2025",
+    label: "Astro-blog",
+    href: "https://github.com/kmoretti/blog",
+    site: "https://blog.081531.xyz",
+    date: "2026",
     color: "red",
-    stamp: "popular",
+    stamp: "blog",
     blurb:
-      "An open-source, self-hosted space for publishing and sharing your thoughts — your own little corner of the web.",
+      "An Astro framework blog customized for personal use based on an open-source project. Future content will focus on tech stacks and document troubleshooting tutorials.",
+    stack: ["Astro", "MDX"],
+  },
+  {
+    label: "Home-Vue-Go",
+    href: "https://github.com/kmoretti/Home-Vue-go",
+    date: "2026",
+    color: "blue",
+    stamp: "homepage",
+    blurb:
+      "A personalized Go fork of the JLinMr/Home-Vue project, used as a navigation page with added icon adaptations.",
     stack: ["Go", "Vue"],
   },
   {
-    label: "Dox — todos in terminal",
-    href: "https://github.com/lin-snow/dox",
-    date: "2026",
-    color: "blue",
-    stamp: "new",
-    blurb:
-      "More than a todo list: a terminal-first task manager. TUI by default, CLI for scripts — with projects, an inbox, markdown notes, full-text search, multi-user invites and an activity feed, all from one container and a single SQLite file.",
-    stack: ["Go", "TypeScript"],
-  },
-  {
-    label: "Kemate — a Vercel-like PaaS",
+    label: "Moment",
+    href: "https://github.com/kmoretti/moments",
     date: "2026",
     color: "green",
-    stamp: "WIP",
+    stamp: "Memos",
     blurb:
-      "A platform-as-a-service taking aim at the likes of Vercel, built on a microservice architecture.",
+      "Minimalist Moments, customized with some personal features.",
     stack: ["Go"],
   },
 ];
+
+export const projectsConfig = {
+  showCount: 5,
+  moreHref: "https://github.com/kmoretti",
+};
 
 export const artifacts: Entry[] = [
   {
@@ -94,6 +104,12 @@ export const artifacts: Entry[] = [
     href: "https://blog.sn0w.fyi/posts/2023_summary/",
   },
 ];
+
+export const artifactsConfig = {
+  mode: "rss" as "manual" | "rss",
+  rssUrl: "https://blog.081531.xyz/rss.xml",
+  showCount: 5,
+};
 
 // `heart: true` marks a "support me" link (rendered with a hand-drawn heart) so
 // it reads as a CTA rather than just another profile link.

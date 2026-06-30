@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-`Sn0w` is a single-page personal homepage (L1nSn0w's). It is a static React + Vite + Tailwind v4 site with one route — there is no router, no backend, no tests. `src/App.tsx` is the page shell; it composes presentational components from `src/components/` driven by data in `src/content.ts`.
+`Sn0w` is a single-page personal homepage (克喵Moretti's). It is a static React + Vite + Tailwind v4 site with one route — there is no router, no backend, no tests. `src/App.tsx` is the page shell; it composes presentational components from `src/components/` driven by data in `src/content.ts`.
 
 ## Commands
 

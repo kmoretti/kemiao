@@ -6,6 +6,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 
 /* Replays an entrance animation (by remounting via a bumped key) on hover —
    but only on devices with a true pointer. Touchscreens synthesize a
@@ -488,8 +489,70 @@ export function SectionLabel({ children }: { children: string }) {
   );
 }
 
+/* A light dimming-overlay that pops `children` into the centre of the screen
+   and closes on Esc, a backdrop click, or the × button. Rendered through a
+   portal to <body> so transformed / overflow-hidden ancestors can neither clip
+   nor skew it. While open it locks body scroll and parks focus. */
+export function Lightbox({
+  open,
+  onClose,
+  label,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  label: string;
+  children: ReactNode;
+}) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={label}
+      onClick={onClose}
+      className="lightbox fixed inset-0 z-[200] flex items-center justify-center p-6"
+    >
+      <button
+        ref={closeRef}
+        type="button"
+        onClick={onClose}
+        aria-label="Close"
+        className="absolute right-4 top-4 flex size-9 items-center justify-center rounded-full text-paper/80 transition-colors duration-200 hover:bg-paper/10 hover:text-paper"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" className="size-5 overflow-visible">
+          <path d="M6,6 L18,18 M18,6 L6,18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </button>
+      <div onClick={(e) => e.stopPropagation()} className="lightbox-pop">
+        {children}
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 /* QR code popover — on hover, a polaroid-style card appears below the link
-   showing a QR code image. Uses the same group-hover reveal as Annotation,
+   showing a QR code image. On click, opens the same image in a Lightbox that
+   can be scanned at full size. Uses the same group-hover reveal as Annotation,
    but for images instead of text. */
 export function QrPopover({
   src,
@@ -500,30 +563,53 @@ export function QrPopover({
   label: string;
   children: ReactNode;
 }) {
+  const [zoom, setZoom] = useState(false);
   return (
-    <span className="group/qr relative inline-block">
-      {children}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 z-50 mt-0.5 -translate-x-1/2 rotate-1 scale-90 w-max whitespace-nowrap opacity-0 transition-[opacity,transform] duration-200 group-hover/qr:scale-100 group-hover/qr:opacity-100"
-        style={{
-          top: "100%",
-          backgroundColor: "white",
-          borderRadius: "10px 8px 11px 9px / 8px 11px 9px 10px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 8px 20px -4px rgba(0,0,0,0.15)",
-          padding: "6px",
-        }}
-      >
-        <img
-          src={src}
-          alt={`QR code for ${label}`}
-          width={128}
-          height={128}
-          className="block size-[128px] rounded-sm"
-          draggable={false}
-        />
+    <>
+      <span className="group/qr relative inline-block">
+        <span onClick={() => setZoom(true)} className="cursor-zoom-in">
+          {children}
+        </span>
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 z-50 mt-0.5 -translate-x-1/2 rotate-1 scale-90 w-max whitespace-nowrap opacity-0 transition-[opacity,transform] duration-200 group-hover/qr:scale-100 group-hover/qr:opacity-100"
+          style={{
+            top: "100%",
+            backgroundColor: "white",
+            borderRadius: "10px 8px 11px 9px / 8px 11px 9px 10px",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.04), 0 8px 20px -4px rgba(0,0,0,0.15)",
+            padding: "6px",
+          }}
+        >
+          <img
+            src={src}
+            alt={`QR code for ${label}`}
+            width={128}
+            height={128}
+            className="block size-[128px] rounded-sm"
+            draggable={false}
+          />
+        </span>
       </span>
-    </span>
+      <Lightbox open={zoom} onClose={() => setZoom(false)} label={`${label} QR code`}>
+        <figure
+          className="relative -rotate-1 bg-paper p-4"
+          style={{
+            borderRadius: "13px 9px 12px 8px / 9px 13px 8px 12px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.18), 0 30px 60px -24px rgba(0,0,0,0.7)",
+          }}
+        >
+          <img
+            src={src}
+            alt={`${label} QR code`}
+            className="block size-[min(76vw,22rem)] object-contain"
+          />
+          <figcaption className="mt-3 text-center font-mono text-[0.74rem] text-muted">
+            {label}
+          </figcaption>
+        </figure>
+      </Lightbox>
+    </>
   );
 }
 

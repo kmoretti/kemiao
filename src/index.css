@@ -166,6 +166,13 @@
     border-bottom: 1px solid
       color-mix(in srgb, var(--color-soft) 45%, transparent);
   }
+
+  /* Dimming + blurred backdrop for the lightbox. */
+  .lightbox {
+    background: color-mix(in srgb, var(--color-ink) 58%, transparent);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+  }
 }
 
 /* Staggered entrance */
@@ -259,6 +266,16 @@
   }
 }
 
+/* Lightbox backdrop fades in; content pops up from slightly small. */
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   /* `backwards` (not `forwards`) so the element reverts to transform:none
      once the entrance finishes — a lingering translateY(0) would create a
@@ -277,6 +294,12 @@
   }
   .live-ping {
     animation: ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  .lightbox {
+    animation: fade 0.2s ease-out backwards;
+  }
+  .lightbox-pop {
+    animation: pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
   /* The cover only exists while the wipe runs (these rules live inside the
      reduced-motion guard), so under reduced motion the glyph just shows

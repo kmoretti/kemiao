@@ -121,5 +121,5 @@ export const links: Link[] = [
   { label: "Blog", href: "https://s.081531.xyz/blog" },
   { label: "Ech0", href: "https://m.081531.xyz" },
   { label: "Guide", href: "https://s.081531.xyz/home" },
-  { label: "Sponsor", href: "https://sponsor.sn0w.fyi", heart: true },
+  { label: "Sponsor", href: "https://sponsor.081531.xyz", heart: true },
 ];

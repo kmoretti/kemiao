@@ -128,21 +128,15 @@ export function Intro() {
         </a>
         ,{" "}
         <QrPopover src={intro.telegram} label="Telegram">
-          <a
-            href={intro.telegram}
-            className="contact rounded-[5px_3px_6px_4px_/_3px_6px_4px_5px] px-1.5 font-medium no-underline"
-          >
+          <span className="contact cursor-pointer rounded-[5px_3px_6px_4px_/_3px_6px_4px_5px] px-1.5 font-medium no-underline">
             Telegram
-          </a>
+          </span>
         </QrPopover>
         ,{" "}
         <QrPopover src={intro.qq} label="QQ">
-          <a
-            href={intro.qq}
-            className="contact rounded-[5px_3px_6px_4px_/_3px_6px_4px_5px] px-1.5 font-medium no-underline"
-          >
+          <span className="contact cursor-pointer rounded-[5px_3px_6px_4px_/_3px_6px_4px_5px] px-1.5 font-medium no-underline">
             QQ
-          </a>
+          </span>
         </QrPopover>{" "}
         or{" "}
         <a

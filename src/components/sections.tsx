@@ -4,6 +4,7 @@ import {
   artifactsConfig,
   experience,
   links,
+  liveConfig,
   projects,
   projectsConfig,
   type Entry,
@@ -15,8 +16,10 @@ import {
   HeartDoodle,
   LinkDoodle,
   LiveDot,
+  LivePlatformIcon,
   ProjectDetail,
   ProjectsMoreBtn,
+  Pushpin,
   SectionLabel,
   Stamp,
 } from "./desk";
@@ -48,6 +51,188 @@ function PlainMeta({ children }: { children: string }) {
 }
 
 /* -------------------------------- sections -------------------------------- */
+
+type LiveDevice = {
+  device_id: string;
+  device_name: string;
+  platform: string;
+  app_name: string;
+  app_id: string;
+  is_online: number;
+  last_seen_at: string;
+  display_title: string;
+  extra?: { battery_percent: number; battery_charging: boolean };
+};
+
+type LiveActivity = {
+  id: number;
+  device_id: string;
+  device_name: string;
+  platform: string;
+  app_name: string;
+  app_id: string;
+  display_title: string;
+  started_at: string;
+};
+
+type LiveData = {
+  devices: LiveDevice[];
+  recent_activities: LiveActivity[];
+  server_time: string;
+  viewer_count: number;
+};
+
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "now";
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  return `${Math.floor(hrs / 24)}d`;
+}
+
+export function LivePanel() {
+  const [data, setData] = useState<LiveData | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchData = () =>
+      fetch(liveConfig.apiUrl)
+        .then((res) => (res.ok ? res.json() : Promise.reject()))
+        .then((d: LiveData) => {
+          if (!cancelled) setData(d);
+        })
+        .catch(() => {
+          if (!cancelled) setError(true);
+        });
+    fetchData();
+    const id = setInterval(fetchData, 30000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, []);
+
+  if (!data && !error) return null;
+  if (error || !data) return null;
+
+  const onlineDevices = data.devices.filter((d) => d.is_online);
+  const recent = data.recent_activities.slice(0, 5);
+
+  return (
+    <section className="rise mt-9" style={{ animationDelay: "150ms" }}>
+      <div
+        className="relative border px-4 pt-[18px] pb-3"
+        style={{
+          borderColor: `color-mix(in srgb, var(--color-ink) 18%, transparent)`,
+          borderRadius: "8px 5px 9px 6px / 5px 9px 6px 8px",
+        }}
+      >
+        <Pushpin />
+
+        <div className="mb-3 flex items-center justify-between">
+          <SectionLabel>live</SectionLabel>
+          <span
+            className="inline-flex items-center gap-1 rounded-[3px] px-2 py-[3px] font-mono text-[0.55rem] font-medium uppercase tracking-[0.12em]"
+            style={{
+              color: "var(--color-marker-green)",
+              border: "1px solid color-mix(in srgb, var(--color-marker-green) 50%, transparent)",
+              outline: "1px solid color-mix(in srgb, var(--color-marker-green) 50%, transparent)",
+              outlineOffset: "2px",
+            }}
+          >
+            <span className="relative inline-block size-[5px]">
+              <span
+                className="live-ping absolute inset-0 rounded-full"
+                style={{ background: "var(--color-marker-green)" }}
+              />
+              <span
+                className="absolute inset-0 rounded-full"
+                style={{ background: "var(--color-marker-green)" }}
+              />
+            </span>
+            live
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {onlineDevices.map((device) => (
+            <div key={device.device_id} className="flex items-start gap-2.5">
+              <LivePlatformIcon platform={device.platform} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono text-[0.78rem] font-medium text-ink">
+                    {device.device_name}
+                  </span>
+                  <LiveDot />
+                  {device.extra && (
+                    <span className="font-mono text-[0.62rem] tabular-nums text-muted">
+                      {device.extra.battery_percent}%
+                      {device.extra.battery_charging && "\u00A0\u26A1"}
+                    </span>
+                  )}
+                </div>
+                <div className="mt-0.5 font-mono text-[0.68rem] leading-snug text-soft">
+                  {device.app_name}
+                  {device.display_title && (
+                    <>
+                      <span className="mx-1 text-muted/50">·</span>
+                      <span className="text-muted">{device.display_title}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {recent.length > 0 && (
+          <>
+            <div
+              className="my-3"
+              style={{
+                borderTop: "1px solid color-mix(in srgb, var(--color-ink) 12%, transparent)",
+              }}
+            />
+            <div className="space-y-[3px]">
+              {recent.map((a, i) => (
+                <div
+                  key={a.id}
+                  className="flex items-center gap-2 font-mono text-[0.64rem]"
+                >
+                  <span className="shrink-0 tabular-nums text-muted">
+                    {timeAgo(a.started_at)}
+                  </span>
+                  <span
+                    className="size-[3px] shrink-0 rounded-full"
+                    style={{
+                      background: i === 0
+                        ? "var(--color-marker-green)"
+                        : "color-mix(in srgb, var(--color-ink) 20%, transparent)",
+                    }}
+                  />
+                  <span className="min-w-0 truncate text-soft">{a.app_name}</span>
+                  {a.display_title && (
+                    <span className="hidden min-w-0 truncate text-muted/60 sm:inline">
+                      · {a.display_title}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="mt-2 flex items-center justify-end gap-1 font-mono text-[0.6rem] text-muted/50">
+          <LiveDot />
+          {data.viewer_count} watching
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export function Experience() {
   return (

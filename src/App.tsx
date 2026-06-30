@@ -4,6 +4,7 @@ import {
   Artifacts,
   Elsewhere,
   Experience,
+  LivePanel,
   Projects,
 } from "./components/sections";
 
@@ -30,6 +31,7 @@ export default function App() {
     <div className="min-h-svh">
       <main className="mx-auto max-w-[33rem] px-6 pt-16 pb-28 sm:pt-24">
         <Intro />
+        <LivePanel />
         <Experience />
         <Projects />
         <Artifacts />

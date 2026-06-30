@@ -112,6 +112,10 @@ export const artifactsConfig = {
   moreHref: "https://blog.081531.xyz",
 };
 
+export const liveConfig = {
+  apiUrl: "/live-api/current",
+};
+
 // `heart: true` marks a "support me" link (rendered with a hand-drawn heart) so
 // it reads as a CTA rather than just another profile link.
 export type Link = { label: string; href: string; heart?: boolean };

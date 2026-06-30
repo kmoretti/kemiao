@@ -13,6 +13,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/rss.*/, "/rss.xml"),
       },
+      "/live-api": {
+        target: "https://live.081531.xyz",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/live-api/, "/api"),
+      },
     },
   },
 });

@@ -455,6 +455,46 @@ export function Pushpin() {
   );
 }
 
+/* Small hand-drawn OS icon for the Live panel — a tiny sketch matching the
+   notebook aesthetic. Windows → a classic window; Android → a rounded
+   slab; everything else → a generic monitor. */
+export function LivePlatformIcon({ platform }: { platform: string }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      className="size-3.5 shrink-0 -translate-y-px overflow-visible text-muted"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {platform === "windows" ? (
+        <g>
+          <path d="M2,2.5 L14,2.5 L14,13.5 L2,13.5 Z" />
+          <path d="M2,7 L14,7" />
+        </g>
+      ) : platform === "android" ? (
+        <g>
+          <rect x="4.5" y="3" width="7" height="9" rx="1.5" />
+          <path d="M6.5,12 L6.5,14" />
+          <path d="M9.5,12 L9.5,14" />
+          <path d="M3.5,6.5 L4.5,6.5" />
+          <path d="M11.5,6.5 L12.5,6.5" />
+        </g>
+      ) : (
+        <g>
+          <rect x="2" y="3.5" width="12" height="9" rx="1" />
+          <path d="M6,12.5 L10,12.5" />
+          <path d="M8,12 L8,13.5" />
+          <path d="M6,13.5 L10,13.5" />
+        </g>
+      )}
+    </svg>
+  );
+}
+
 /* Hand-drawn asterisk spark — three slightly-wobbly marker strokes, replaces
    the ✳ glyph that renders as a color emoji on iOS. */
 function Spark() {

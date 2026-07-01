@@ -167,10 +167,14 @@ export function LivePanel() {
                     {device.device_name}
                   </span>
                   <LiveDot />
-                  {device.extra && (
-                    <span className="font-mono text-[0.62rem] tabular-nums text-muted">
-                      {device.extra.battery_percent}%
-                      {device.extra.battery_charging && "\u00A0\u26A1"}
+                  {device.extra?.battery_percent != null && (
+                    <span className="inline-flex items-center gap-0.5 font-mono text-[0.62rem] tabular-nums text-muted">
+                      <span>{device.extra.battery_percent}%</span>
+                      {device.extra.battery_charging && (
+                        <svg viewBox="0 0 12 12" aria-hidden="true" className="size-2.5 overflow-visible" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M5.5,1 L5.5,5 L2.5,5 L6.5,11 L6.5,7 L9.5,7 Z" />
+                        </svg>
+                      )}
                     </span>
                   )}
                 </div>
